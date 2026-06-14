@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智汇客服 · AI 智能客服平台</title>
+  <meta name="description" content="基于大模型的智能客服，自动回答租客问题，减少80%人工成本。为物业及中介公司打造的AI客服SaaS。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* =====================================================
+       TOKENS & RESET
+    ===================================================== */
+    :root {
+      --bg-base:     #080c14;
+      --bg-surface:  #0e1521;
+      --bg-card:     #131d2e;
+      --bg-card-alt: #0a1020;
+      --border:      rgba(255,255,255,0.07);
+      --border-glow: rgba(20,184,166,0.35);
+
+      --text-primary:   #f0f4ff;
+      --text-secondary: #8a96b0;
+      --text-muted:     #4e5a72;
+
+      --accent:       #14b8a6;
+      --accent-light: #2dd4bf;
+      --accent-glow:  rgba(20,184,166,0.18);
+      --accent-glow-strong: rgba(20,184,166,0.35);
+
+      --blue: #3b82f6;
+      --blue-light: #60a5fa;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-slow: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+      --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+      --font-sc:   'Noto Sans SC', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img, svg { display: block; max-width: 100%; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* =====================================================
+       SCROLLBAR & SELECTION
+    ===================================================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    ::selection { background: var(--accent-glow-strong); color: var(--text-primary); }
+
+    /* =====================================================
+       LAYOUT UTILITIES
+    ===================================================== */
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section {
+      padding: 100px 0;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sc);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .section-title {
+      font-family: var(--font-sc);
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* =====================================================
+       ANIMATION UTILITIES
+    ===================================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* =====================================================
+       NAVIGATION
+    ===================================================== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      transition: background var(--transition), backdrop-filter var(--transition), border-color var(--transition);
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav.scrolled {
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-color: var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-sc);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #0d9488);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+      font-weight: 500;
+    }
+
+    .nav-link:hover { color: var(--text-primary); }
+
+    .nav-cta {
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+
+    .nav-cta:hover {
+      background: var(--accent-light);
+      box-shadow: 0 0 24px var(--accent-glow-strong);
+      transform: translateY(-1px);
+    }
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 65% 40%, rgba(20,184,166,0.09) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 15% 70%, rgba(59,130,246,0.07) 0%, transparent 60%),
+        linear-gradient(180deg, #080c14 0%, #0a1020 100%);
+    }
+
+    /* Decorative geometric elements */
+    .hero-geo {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .hero-geo-1 {
+      top: 18%;
+      right: 8%;
+      width: 260px;
+      height: 260px;
+      border: 1px solid rgba(20,184,166,0.12);
+      border-radius: 50%;
+      animation: spin-slow 20s linear infinite;
+    }
+
+    .hero-geo-2 {
+      top: 22%;
+      right: calc(8% + 20px);
+      width: 200px;
+      height: 200px;
+      border: 1px solid rgba(20,184,166,0.18);
+      transform: rotate(45deg);
+      animation: spin-slow 14s linear infinite reverse;
+    }
+
+    .hero-geo-3 {
+      top: 26%;
+      right: calc(8% + 40px);
+      width: 140px;
+      height: 140px;
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 50%;
+      animation: spin-slow 9s linear infinite;
+    }
+
+    .hero-geo-dot {
+      top: 50%;
+      right: calc(8% + 90px);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 16px var(--accent), 0 0 32px var(--accent-glow-strong);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
+
+    .hero-geo-line {
+      top: 50%;
+      right: calc(8% + 94px);
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      transform: translateY(-50%);
+    }
+
+    .hero-geo-grid {
+      bottom: 10%;
+      right: 5%;
+      width: 180px;
+      height: 180px;
+      background-image:
+        linear-gradient(rgba(20,184,166,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20,184,166,0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+      clip-path: polygon(0 0, 100% 0, 100% 65%, 65% 100%, 0 100%);
+    }
+
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px 6px 8px;
+      border-radius: 100px;
+      background: rgba(20,184,166,0.1);
+      border: 1px solid rgba(20,184,166,0.25);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent-light);
+      margin-bottom: 28px;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+
+    .hero-headline {
+      font-family: var(--font-sc);
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .hero-headline .accent-word {
+      background: linear-gradient(135deg, var(--accent-light), var(--blue-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: var(--font-sc);
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      letter-spacing: -0.01em;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-light);
+      box-shadow: 0 8px 32px rgba(20,184,166,0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 500;
+      font-family: var(--font-sc);
+      transition: border-color var(--transition), color var(--transition), background var(--transition);
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-stat-value {
+      font-family: var(--font-sc);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.04em;
+    }
+
+    .hero-stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* =====================================================
+       PROBLEM SECTION
+    ===================================================== */
+    .problem {
+      background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+    }
+
+    .problem-header { margin-bottom: 64px; }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .pain-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pain-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .pain-card:hover {
+      border-color: rgba(239,68,68,0.2);
+      box-shadow: 0 8px 40px rgba(239,68,68,0.06);
+      transform: translateY(-4px);
+    }
+
+    .pain-card:hover::before { opacity: 1; }
+
+    .pain-icon {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .pain-title {
+      font-family: var(--font-sc);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .pain-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .pain-stat {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: #f87171;
+      font-weight: 600;
+    }
+
+    /* =====================================================
+       SOLUTION SECTION
+    ===================================================== */
+    .solution { background: var(--bg-base); }
+
+    .solution-header { margin-bottom: 64px; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      position: relative;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-glow);
+      box-shadow: 0 0 40px var(--accent-glow);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05));
+      border: 1px solid rgba(20,184,166,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+
+    .feature-title {
+      font-family: var(--font-sc);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: rgba(20,184,166,0.1);
+      color: var(--accent-light);
+      border: 1px solid rgba(20,184,166,0.2);
+    }
+
+    /* =====================================================
+       HOW IT WORKS
+    ===================================================== */
+    .how {
+      background: linear-gradient(180deg, var(--bg-base) 0%, var(--bg-surface) 50%, var(--bg-base) 100%);
+    }
+
+    .how-header { margin-bottom: 64px; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: calc(16.67% + 20px);
+      right: calc(16.67% + 20px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), rgba(20,184,166,0.3), rgba(59,130,246,0.3), var(--blue));
+      z-index: 0;
+    }
+
+    .step {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .step-num {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sc);
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin: 0 auto 28px;
+      color: var(--accent);
+      box-shadow: 0 0 0 6px var(--bg-base);
+      position: relative;
+    }
+
+    .step-num::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-glow), transparent);
+    }
+
+    .step-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .step-title {
+      font-family: var(--font-sc);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* =====================================================
+       PRICING
+    ===================================================== */
+    .pricing { background: var(--bg-base); }
+
+    .pricing-header { margin-bottom: 64px; }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 36px 28px;
+      position: relative;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .pricing-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(160deg, rgba(20,184,166,0.06) 0%, var(--bg-card) 60%);
+      box-shadow: 0 0 60px var(--accent-glow);
+    }
+
+    .pricing-card.featured:hover {
+      box-shadow: 0 12px 60px var(--accent-glow-strong);
+    }
+
+    .pricing-popular-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 16px;
+      border-radius: 100px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-sc);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pricing-tier {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .pricing-card.featured .pricing-tier { color: var(--accent); }
+
+    .pricing-name {
+      font-family: var(--font-sc);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .pricing-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .pricing-currency {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .pricing-amount {
+      font-family: var(--font-sc);
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .pricing-period {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .pricing-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      min-height: 40px;
+    }
+
+    .pricing-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 24px;
+    }
+
+    .pricing-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .pricing-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .pricing-feature::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: rgba(20,184,166,0.15);
+      border: 1px solid rgba(20,184,166,0.3);
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%2314b8a6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+      background-size: 10px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .pricing-cta {
+      display: block;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--font-sc);
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+
+    .pricing-cta.outline {
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: transparent;
+    }
+
+    .pricing-cta.outline:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.04);
+      transform: translateY(-1px);
+    }
+
+    .pricing-cta.filled {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(20,184,166,0.25);
+    }
+
+    .pricing-cta.filled:hover {
+      background: var(--accent-light);
+      box-shadow: 0 6px 28px rgba(20,184,166,0.4);
+      transform: translateY(-2px);
+    }
+
+    /* =====================================================
+       CTA SECTION
+    ===================================================== */
+    .cta-section {
+      background: linear-gradient(160deg, rgba(20,184,166,0.06) 0%, var(--bg-base) 50%, rgba(59,130,246,0.05) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cta-inner {
+      display: flex;
+      align-items: center;
+      gap: 80px;
+    }
+
+    .cta-content { flex: 1; }
+
+    .cta-title {
+      font-family: var(--font-sc);
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .cta-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .cta-form-wrap { flex: 1; max-width: 440px; }
+
+    .cta-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .cta-input {
+      flex: 1;
+      padding: 13px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      backdrop-filter: blur(8px);
+    }
+
+    .cta-input::placeholder { color: var(--text-muted); }
+
+    .cta-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .cta-submit {
+      padding: 13px 24px;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: var(--font-sc);
+      white-space: nowrap;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      flex-shrink: 0;
+    }
+
+    .cta-submit:hover {
+      background: var(--accent-light);
+      box-shadow: 0 6px 24px rgba(20,184,166,0.35);
+      transform: translateY(-1px);
+    }
+
+    .cta-note {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    .footer {
+      background: var(--bg-base);
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sc);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-link {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+
+    .footer-link:hover { color: var(--text-secondary); }
+
+    /* =====================================================
+       MOBILE RESPONSIVE
+    ===================================================== */
+    @media (max-width: 900px) {
+      .pain-grid,
+      .feature-grid,
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .steps::before { display: none; }
+
+      .step { text-align: left; display: flex; gap: 24px; align-items: flex-start; padding: 0; }
+      .step-num { margin: 0; flex-shrink: 0; }
+      .step-content { flex: 1; }
+
+      .cta-inner { flex-direction: column; gap: 40px; }
+      .cta-form-wrap { width: 100%; max-width: 100%; }
+
+      .hero-stats { gap: 24px; flex-wrap: wrap; }
+      .hero-geo-1, .hero-geo-2, .hero-geo-3 { display: none; }
+
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 540px) {
+      .section { padding: 72px 0; }
+      .container { padding: 0 16px; }
+
+      .hero { padding: 100px 0 60px; }
+      .hero-headline { font-size: 2.1rem; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+      .hero-stats { flex-direction: column; gap: 16px; }
+
+      .cta-form { flex-direction: column; }
+      .cta-submit { width: 100%; padding: 14px; }
+
+      .pain-card, .feature-card, .pricing-card { padding: 28px 20px; }
+
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+
+    @media (max-width: 360px) {
+      html { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================
+       NAV
+  ===================================================== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-mark">
+          <svg width="16" height="16" viewBox="0 0 1616" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 2C4.6862 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 10.5c-2.49 0-4.5-2.01-4.5-4.5S5.51 3.5 8 3.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm-1-6.5v3.25L9.75 7l-.88.75L7.12 7H7V5.5z" fill="white"/>
+          </svg>
+        </div>
+        智汇客服
+      </a>
+      <div class="nav-links">
+        <a href="#problem" class="nav-link">痛点</a>
+        <a href="#solution" class="nav-link">功能</a>
+        <a href="#how" class="nav-link">原理</a>
+        <a href="#pricing" class="nav-link">价格</a>
+        <a href="#cta" class="nav-cta">开始试用</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =====================================================
+       HERO
+  ===================================================== -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+
+    <!-- Decorative CSS-only geometric elements -->
+    <div class="hero-geo hero-geo-1"></div>
+    <div class="hero-geo hero-geo-2"></div>
+    <div class="hero-geo hero-geo-3"></div>
+    <div class="hero-geo hero-geo-dot"></div>
+    <div class="hero-geo hero-geo-line"></div>
+    <div class="hero-geo hero-geo-grid"></div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge reveal">
+          <span class="hero-badge-dot"></span>
+          AI 大模型驱动 · 已在 200+ 物业场景验证
+        </div>
+
+        <h1 class="hero-headline reveal reveal-delay-1">
+          让 AI 处理<br/>
+          <span class="accent-word">80% 的重复咨询</span>
+        </h1>
+
+        <p class="hero-tagline reveal reveal-delay-2">
+          基于大模型的智能客服，自动回答租客问题，减少人工成本。<br/>
+          零配置接入，最快 30 分钟上线。
+        </p>
+
+        <div class="hero-actions reveal reveal-delay-3">
+          <a href="#cta" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2l56H3l5-6z" fill="currentColor"/>
+            </svg>
+            开始免费试用
+          </a>
+          <a href="#how" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6.5 5.5l3.5 2.5-3.5 2.5V5.5z" fill="currentColor"/>
+            </svg>
+            了解工作原理
+          </a>
+        </div>
+
+        <div class="hero-stats reveal reveal-delay-4">
+          <div>
+            <div class="hero-stat-value">200<span style="font-size:1rem;color:var(--accent)">+</span></div>
+            <div class="hero-stat-label">物业/中介公司</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">80<span style="font-size:1rem;color:var(--accent)%</span></div>
+            <div class="hero-stat-label">自动化回答率</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">&lt;30<span style="font-size:1rem;color:var(--accent)">s</span></div>
+            <div class="hero-stat-label">平均响应时间</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       PROBLEM
+  ===================================================== -->
+  <section class="section problem" id="problem">
+    <div class="container">
+      <div class="problem-header">
+        <div class="section-label reveal">痛点</div>
+        <h2 class="section-title reveal reveal-delay-1">人工客服太贵？</h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          物业和中介公司每天面对大量重复问题，人工处理成本高、效率低、体验参差不齐。
+        </p>
+      </div>
+
+      <div class="pain-grid">
+        <div class="pain-card reveal">
+          <span class="pain-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="18" stroke="#f87171" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <path d="M20 12v10M20 26v2" stroke="#f87171" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div class="pain-title">人力成本持续上涨</div>
+          <div class="pain-desc">
+            专职客服月薪6000 元起，还需培训、排班、管理。业务旺季人手不够，淡季又浪费。
+          </div>
+          <div class="pain-stat">客服人力成本年均上涨 12%</div>
+        </div>
+
+        <div class="pain-card reveal reveal-delay-1">
+          <span class="pain-icon">
+            <svg width="40" height="40" viewBox="0 0 4040" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="8" width="32" height="24" rx="4" stroke="#f87171" stroke-width="1.5"/>
+              <path d="M1318h14M13 23h8" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="30" cy="28" r="6" fill="#f87171"/>
+              <path d="M28 28l1.5 1.5 3-3" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="pain-title">重复问题占用大量时间</div>
+          <div class="pain-desc">
+            房租到期、物业费、水电费、维修申报——这类问题占全部咨询的 80%，消耗客服大量精力。
+          </div>
+          <div class="pain-stat">超 8 成问题属于标准咨询</div>
+        </div>
+
+        <div class="pain-card reveal reveal-delay-2">
+          <span class="pain-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6C12.268 6 6 12.268 6 20s6.268 14 14 14 14-6.268 14-14S27.732 6 20 6z" stroke="#f87171" stroke-width="1.5"/>
+              <path d="M20 14v9l6 3" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div class="pain-title">响应慢导致租客流失</div>
+          <div class="pain-desc">
+            非工作时段无人值班，租客发消息得不到回复，转头就找别家中介。口碑损失难以量化。
+          </div>
+          <div class="pain-stat">响应超过 5 分钟，流失率 +40%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       SOLUTION
+  ===================================================== -->
+  <section class="section solution" id="solution">
+    <div class="container">
+      <div class="solution-header">
+        <div class="section-label reveal">方案</div>
+        <h2 class="section-title reveal reveal-delay-1">AI 如何帮你</h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          智汇客服基于大模型构建，专为物业及中介公司场景优化，开箱即用。
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card reveal">
+          <div class="feature-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z" stroke="#14b8a6" stroke-width="1.5"/>
+              <path d="M3 12h18M12 3c-2.5 2.5-4 5.5-4 9s1.5 6.5 4 9M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9" stroke="#14b8a6" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="feature-title">意图识别</div>
+          <div class="feature-desc">
+            精准理解租客问题意图，自动分类：费用查询、维修申报、合同咨询、投诉处理，零配置自动分流。
+          </div>
+          <span class="feature-tag">NLP 引擎</span>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="18" height="18" rx="3" stroke="#14b8a6" stroke-width="1.5"/>
+              <path d="M8 12h8M8 8h5M8 16h3" stroke="#14b8a6" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="feature-title">知识库 + RAG</div>
+          <div class="feature-desc">
+            上传房源手册、物业公约、常见问答，AI 基于私有知识库回答，确保答案准确、可溯源。
+          </div>
+          <span class="feature-tag">RAG 检索增强</span>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 2424" fill="none">
+              <path d="M3 8l7-4 7 4v8l-7 4-7-4V8z" stroke="#14b8a6" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M10 4v14M17 8v14" stroke="#14b8a6" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="feature-title">工单智能路由</div>
+          <div class="feature-desc">
+            AI 判断问题复杂度，简单问题即时答复，复杂问题自动创建工单并路由给对应客服，减少无效转接。
+          </div>
+          <span class="feature-tag">自动路由</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       HOW IT WORKS
+  ===================================================== -->
+  <section class="section how" id="how">
+    <div class="container">
+      <div class="how-header">
+        <div class="section-label reveal">流程</div>
+        <h2 class="section-title reveal reveal-delay-1">三步完成接入</h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          无需技术团队，最快 30 分钟完成配置并上线。
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <span class="step-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <rect x="4" y="4" width="28" height="28" rx="6" stroke="#14b8a6" stroke-width="1.5"/>
+                <path d="M12 18h12M18 12v12" stroke="#14b8a6" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="step-title">接入网站 / 公众号</div>
+            <div class="step-desc">
+              复制粘贴一行代码，嵌入官网或微信公众号。也可对接企业微信、钉钉、飞书。
+            </div>
+          </div>
+        </div>
+
+        <div class="step reveal reveal-delay-1">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <span class="step-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="12" stroke="#14b8a6" stroke-width="1.5"/>
+                <path d="M14 18l3 3 6-6" stroke="#14b8a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <div class="step-title">AI 自动回答</div>
+            <div class="step-desc">
+              用户发来消息，AI 在 3 秒内基于知识库生成专业回答，准确率超 92%，支持多轮对话。
+            </div>
+          </div>
+        </div>
+
+        <div class="step reveal reveal-delay-2">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <span class="step-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <path d="M8 26V16l10-8 10 8v10H8z" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M15 26v-6h6v6" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <div class="step-title">人工接管复杂问题</div>
+            <div class="step-desc">
+              AI 无法解答时自动转接人工，并附带对话摘要，客服无需从头了解上下文，响应效率翻倍。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       PRICING
+  ===================================================== -->
+  <section class="section pricing" id="pricing">
+    <div class="container">
+      <div class="pricing-header">
+        <div class="section-label reveal">价格</div>
+        <h2 class="section-title reveal reveal-delay-1">简单透明的定价</h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          按需选择方案，随时升级或降级，无隐藏费用。
+        </p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Free tier -->
+        <div class="pricing-card reveal">
+          <div class="pricing-tier">Free</div>
+          <div class="pricing-name">免费版</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">¥</span>
+            <span class="pricing-amount">0</span>
+         </div>
+          <div class="pricing-period">永久免费</div>
+          <div class="pricing-desc">适合个人房东和小团队测试体验</div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-features">
+            <div class="pricing-feature">100 条对话 / 月</div>
+            <div class="pricing-feature">1 个知识库</div>
+            <div class="pricing-feature">基础意图识别</div>
+            <div class="pricing-feature">微信公众号接入</div>
+            <div class="pricing-feature">社区支持</div>
+          </div>
+          <a href="#cta" class="pricing-cta outline">立即开始</a>
+        </div>
+
+        <!-- Pro tier -->
+        <div class="pricing-card featured reveal reveal-delay-1">
+          <div class="pricing-popular-badge">最受推荐</div>
+          <div class="pricing-tier">Pro</div>
+          <div class="pricing-name">专业版</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">¥</span>
+            <span class="pricing-amount">299</span>
+          </div>
+          <div class="pricing-period">每月 · 无限对话</div>
+          <div class="pricing-desc">适合中小型物业及中介公司</div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-features">
+            <div class="pricing-feature">无限对话</div>
+            <div class="pricing-feature">5 个知识库</div>
+            <div class="pricing-feature">高级 RAG 检索</div>
+            <div class="pricing-feature">全渠道接入</div>
+            <div class="pricing-feature">工单自动路由</div>
+            <div class="pricing-feature">数据分析面板</div>
+            <div class="pricing-feature">邮件支持</div>
+          </div>
+          <a href="#cta" class="pricing-cta filled">开始试用7 天</a>
+        </div>
+
+        <!-- Enterprise tier -->
+        <div class="pricing-card reveal reveal-delay-2">
+          <div class="pricing-tier">Enterprise</div>
+          <div class="pricing-name">企业版</div>
+          <div class="pricing-price">
+            <span class="pricing-currency">¥</span>
+            <span class="pricing-amount">999</span>
+          </div>
+          <div class="pricing-period">每月 · 不限坐席</div>
+          <div class="pricing-desc">适合多门店大型中介公司</div>
+          <div class="pricing-divider"></div>
+          <div class="pricing-features">
+            <div class="pricing-feature">无限对话 + 无限知识库</div>
+            <div class="pricing-feature">多客服协作</div>
+            <div class="pricing-feature">API 接口开放</div>
+            <div class="pricing-feature">私有知识库部署</div>
+            <div class="pricing-feature">SLA 99.9% 保障</div>
+            <div class="pricing-feature">专属客户成功经理</div>
+            <div class="pricing-feature">定制训练模型</div>
+          </div>
+          <a href="#cta" class="pricing-cta outline">联系销售</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       CTA
+  ===================================================== -->
+  <section class="section cta-section" id="cta">
+    <div class="container">
+      <div class="cta-inner">
+        <div class="cta-content reveal">
+          <div class="section-label">立即开始</div>
+          <h2 class="cta-title">
+            30 分钟上线<br/>
+            <span style="color:var(--accent)">首月仅需 0 元</span>
+          </h2>
+          <p class="cta-subtitle">
+            输入公司邮箱，即可开通免费试用。无须信用卡，不满意随时终止。
+          </p>
+        </div>
+
+        <div class="cta-form-wrap reveal reveal-delay-1">
+          <form class="cta-form" action="https://formspree.io/f/xpwzwqdq" method="POST">
+            <input
+              type="email"
+              class="cta-input"
+              name="email"
+              placeholder="请输入公司邮箱地址"
+              aria-label="公司邮箱"
+              autocomplete="email"
+              required
+            />
+            <input type="hidden" name="_subject" value="新潜在客户 - 智汇客服" />
+            <input type="hidden" name="来源" value="landing-page" />
+            <button type="submit" class="cta-submit">开始试用</button>
+          </form>
+          <div class="cta-note">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1l1.5 33.5.5-2.5 2.5.5 3.5L6 9l-31 .5-3.5L1 4.5 4.5 46 1z" fill="#4e5a72"/>
+            </svg>
+            我们重视隐私，从不向第三方分享您的数据
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       FOOTER
+  ===================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 10.5c-2.49 0-4.5-2.01-4.5-4.5S5.51 3.5 8 3.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5z" fill="#4e5a72"/>
+          </svg>
+          智汇客服 · AI Customer Service Platform
+        </div>
+        <div class="footer-copy">&copy; 2024 智汇客服. 保留所有权利.</div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">隐私政策</a>
+          <a href="#" class="footer-link">服务条款</a>
+          <a href="#" class="footer-link">联系我们</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================
+       SCRIPTS
+  ===================================================== -->
+  <script>
+    // ---- IntersectionObserver for scroll reveals ----
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    reveals.forEach((el) => io.observe(el));
+
+    // ---- Nav scroll state ----
+    const nav = document.getElementById('nav');
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          nav.classList.toggle('scrolled', window.scrollY > 24);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // ---- Smooth scroll for anchor links ----
+    document.querySelectorAll('a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', (e) => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ---- CTA form with Formspree ----
+    document.querySelector('.cta-form').addEventListener('submit', async function(e) {
+      const btn = document.querySelector('.cta-submit');
+      const originalText = btn.textContent;
+      btn.textContent = '提交中...';
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          btn.textContent = '已提交 ✓';
+          btn.style.background = 'var(--accent-light)';
+          document.querySelector('.cta-input').disabled = true;
+        } else {
+          throw new Error('提交失败');
+        }
+      } catch (err) {
+        btn.textContent = '重试';
+        btn.disabled = false;
+        alert('提交失败，请稍后重试或联系客服');
+      }
+    });
+  </script>
+</body>
+</html>
