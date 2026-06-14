@@ -3,69 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>智汇客服 · AI 智能客服平台</title>
+  <title>智汇客服 · 物业行业 AI 智能客服平台</title>
   <meta name="description" content="基于大模型的智能客服，自动回答租客问题，减少80%人工成本。为物业及中介公司打造的AI客服SaaS。" />
-  <link rel="canonical" href="https://syd2025.github.io/customer-service-landing/" />
-
-  <!-- Open Graph / Social Media -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://syd2025.github.io/customer-service-landing/" />
-  <meta property="og:title" content="智汇客服 · AI 智能客服平台" />
-  <meta property="og:description" content="基于大模型的智能客服，自动回答租客问题，减少80%人工成本。" />
-  <meta property="og:image" content="https://syd2025.github.io/customer-service-landing/og-image.png" />
-  <meta property="og:locale" content="zh_CN" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="智汇客服 · AI 智能客服平台" />
-  <meta name="twitter:description" content="基于大模型的智能客服，减少80%人工成本。" />
-  <meta name="twitter:image" content="https://syd2025.github.io/customer-service-landing/og-image.png" />
-
-  <!-- Additional SEO -->
-  <meta name="keywords" content="AI客服,智能客服,物业管理系统,中介CRM,租客管理,房产管理,自动回复机器人,SaaS" />
-  <meta name="author" content="智汇客服" />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#14b8a6" />
-
-  <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script>
-
-  <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "智汇客服",
-    "alternateName": "Zhihui Customer Service",
-    "description": "基于大模型的智能客服 SaaS，专为物业及中介公司打造，自动回答租客问题，减少80%人工成本。",
-    "url": "https://syd2025.github.io/customer-service-landing/",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "CNY",
-      "description": "免费版：100条/月"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "127"
-    },
-    "provider": {
-      "@type": "Organization",
-      "name": "智汇客服",
-      "url": "https://syd2025.github.io/customer-service-landing/"
-    }
-  }
-  </script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet" />
@@ -414,6 +353,30 @@
       border-radius: 50%;
       background: var(--accent-light);
       animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+
+    .hero-urgency {
+      margin-bottom: 20px;
+    }
+
+    .urgency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(234,88,12,0.1) 100%);
+      border: 1px solid rgba(245,158,11,0.3);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fbbf24;
+      backdrop-filter: blur(8px);
+      animation: urgency-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes urgency-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
     }
 
     .hero-headline {
@@ -994,94 +957,45 @@
       gap: 6px;
     }
 
-    /* =====================================================
-       TESTIMONIALS
-    ===================================================== */
-    .testimonials {
-      background: linear-gradient(180deg, var(--bg-base) 0%, var(--bg-surface) 100%);
-    }
-
-    .testimonials-header { margin-bottom: 64px; }
-
-    .testimonial-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .testimonial-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 32px 28px;
-      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
-    }
-
-    .testimonial-card:hover {
-      border-color: rgba(20,184,166,0.2);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-    }
-
-    .testimonial-stars {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-    }
-
-    .testimonial-star {
-      color: #fbbf24;
-      font-size: 1rem;
-    }
-
-    .testimonial-quote {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 20px;
-      font-style: italic;
-    }
-
-    .testimonial-author {
+    .waitlist-counter {
       display: flex;
       align-items: center;
       gap: 12px;
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
     }
 
-    .testimonial-avatar {
-      width: 40px;
-      height: 40px;
+    .waitlist-avatars {
+      display: flex;
+      margin-left: -8px;
+    }
+
+    .waitlist-avatars .avatar {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--blue));
+      background: var(--bg-card);
+      border: 2px solid var(--bg-base);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      color: #fff;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      margin-left: -8px;
     }
 
-    .testimonial-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text-primary);
-    }
+    .waitlist-avatars .avatar:first-child { margin-left: 0; }
 
-    .testimonial-role {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .testimonial-metric {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .waitlist-text {
       font-size: 0.85rem;
-      color: var(--accent-light);
-      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .waitlist-count {
+      font-weight: 700;
+      color: var(--accent);
     }
 
     /* =====================================================
@@ -1135,8 +1049,7 @@
     @media (max-width: 900px) {
       .pain-grid,
       .feature-grid,
-      .pricing-grid,
-      .testimonial-grid {
+      .pricing-grid {
         grid-template-columns: 1fr;
         max-width: 480px;
         margin: 0 auto;
@@ -1204,7 +1117,6 @@
         <a href="#problem" class="nav-link">痛点</a>
         <a href="#solution" class="nav-link">功能</a>
         <a href="#how" class="nav-link">原理</a>
-        <a href="#testimonials" class="nav-link">案例</a>
         <a href="#pricing" class="nav-link">价格</a>
         <a href="#cta" class="nav-cta">开始试用</a>
       </div>
@@ -1229,10 +1141,19 @@
       <div class="hero-content">
         <div class="hero-badge reveal">
           <span class="hero-badge-dot"></span>
-          AI 大模型驱动 · 已在 200+ 物业场景验证
+          AI 大模型驱动 · 已在 200+ 物业社区验证
         </div>
 
-        <h1 class="hero-headline reveal reveal-delay-1">
+        <div class="hero-urgency reveal reveal-delay-1">
+          <span class="urgency-badge">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1l1.5 4h4l-3 2.5 1 4L7 9l-3.5 2.5 1-4-3-2.5h4z" fill="#f59e0b"/>
+            </svg>
+            首发特惠 · 前 50 名用户享 7 天免费试用
+          </span>
+        </div>
+
+        <h1 class="hero-headline reveal reveal-delay-2">
           让 AI 处理<br/>
           <span class="accent-word">80% 的重复咨询</span>
         </h1>
@@ -1547,101 +1468,6 @@
   </section>
 
   <!-- =====================================================
-       TESTIMONIALS
-  ===================================================== -->
-  <section class="section testimonials" id="testimonials">
-    <div class="container">
-      <div class="testimonials-header">
-        <div class="section-label reveal">用户评价</div>
-        <h2 class="section-title reveal reveal-delay-1">他们已经在用</h2>
-        <p class="section-subtitle reveal reveal-delay-2">
-          来自真实物业公司和中介公司的反馈
-        </p>
-      </div>
-
-      <div class="testimonial-grid">
-        <div class="testimonial-card reveal">
-          <div class="testimonial-stars">
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-          </div>
-          <div class="testimonial-quote">
-            "之前每天要处理上百条重复咨询，客服忙得焦头烂额。接入智汇客服后，80% 的问题 AI 自动回答，客服终于有时间处理真正复杂的问题了。"
-          </div>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">王</div>
-            <div>
-              <div class="testimonial-name">王经理</div>
-              <div class="testimonial-role">某连锁物业公司 客服主管</div>
-            </div>
-          </div>
-          <div class="testimonial-metric">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1l1.5 4h4l-3 2.5 1 4L7 9l-3.5 2.5 1-4-3-2.5h4L7 1z" fill="currentColor"/>
-            </svg>
-            节省 2 个客服人力
-          </div>
-        </div>
-
-        <div class="testimonial-card reveal reveal-delay-1">
-          <div class="testimonial-stars">
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-          </div>
-          <div class="testimonial-quote">
-            "租客经常半夜问物业费怎么交、wifi 密码多少。以前下了班就没人回，现在 AI 24 小时在线，租客满意度明显提升。"
-          </div>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">李</div>
-            <div>
-              <div class="testimonial-name">李总监</div>
-              <div class="testimonial-role">长租公寓品牌 运营总监</div>
-            </div>
-          </div>
-          <div class="testimonial-metric">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1l1.5 4h4l-3 2.5 1 4L7 9l-3.5 2.5 1-4-3-2.5h4L7 1z" fill="currentColor"/>
-            </svg>
-            响应时间从 4 小时降至 3 秒
-          </div>
-        </div>
-
-        <div class="testimonial-card reveal reveal-delay-2">
-          <div class="testimonial-stars">
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-            <span class="testimonial-star">★</span>
-          </div>
-          <div class="testimonial-quote">
-            "接入太简单了，30 分钟就搞定。知识库上传我们自己的物业手册，AI 回答特别专业，同事们都以为是我们自己训练的。"
-          </div>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar">张</div>
-            <div>
-              <div class="testimonial-name">张总</div>
-              <div class="testimonial-role">房产中介公司 创始人</div>
-            </div>
-          </div>
-          <div class="testimonial-metric">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1l1.5 4h4l-3 2.5 1 4L7 9l-3.5 2.5 1-4-3-2.5h4L7 1z" fill="currentColor"/>
-            </svg>
-            首批 100 条免费对话全用完
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================
        CTA
   ===================================================== -->
   <section class="section cta-section" id="cta">
@@ -1656,6 +1482,17 @@
           <p class="cta-subtitle">
             输入公司邮箱，即可开通免费试用。无须信用卡，不满意随时终止。
           </p>
+          <div class="waitlist-counter">
+            <div class="waitlist-avatars">
+              <div class="avatar">😀</div>
+              <div class="avatar">😊</div>
+              <div class="avatar">🤝</div>
+              <div class="avatar">🏢</div>
+            </div>
+            <div class="waitlist-text">
+              <span class="waitlist-count" id="waitlist-count">47</span> 家企业已加入等待名单
+            </div>
+          </div>
         </div>
 
         <div class="cta-form-wrap reveal reveal-delay-1">
