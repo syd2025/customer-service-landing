@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://syd2025.github.io/customer-service-landing/sitemap.xml
